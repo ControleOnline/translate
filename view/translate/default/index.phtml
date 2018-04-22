@@ -1,0 +1,148 @@
+<div class="row">
+    <div class="col-xs-12">
+        <div class="card">
+            <div class="card hovercard">
+                <div class="card-background">                    
+                    <img class="profile-img card-bkimg lazy-loaded lazy-load" src="/assets/img/default/logo.png">                    
+                </div>
+                <div class="useravatar">
+                    <img src="/assets/img/default/logo.png" class="lazy-loaded">
+                </div>
+                <div class="card-info"> <span class="card-title">
+                        <?= $this->translate(ucfirst($this->module_name)) ?>
+                    </span>
+                </div>
+            </div>            
+            <ul class="nav nav-tabs tab-stats">                
+                <li role="container-wait-translate" class="<?= count($this->translates['wait_translate']) > 0 ? 'active' : '' ?>">
+                    <a href="#container-wait-translate" aria-controls="container-wait-translate" role="tab" data-toggle="tab" aria-expanded="true">
+                        <span class="glyphicon glyphicon-earphone"></span><?= $this->translate('Wait Translate') ?>
+                        <span data-qtd-wait-translate="<?= count($this->translates['wait_translate']) ?>">(<?= count($this->translates['wait_translate']) ?>)</span>
+                    </a>
+                </li>
+                <li role="container-wait-revision" class="<?= count($this->translates['wait_translate']) > 0 ? '' : count($this->translates['wait_revision']) > 0 ? 'active' : '' ?>">
+                    <a href="#container-wait-revision" aria-controls="container-wait-revision" role="tab" data-toggle="tab" aria-expanded="true">
+                        <span class="glyphicon glyphicon-earphone"></span><?= $this->translate('Wait Revision') ?>
+                        <span data-qtd-wait-revision="<?= count($this->translates['wait_revision']) ?>">(<?= count($this->translates['wait_revision']) ?>)</span>
+                    </a>
+                </li>
+                <li role="container-revised" class="<?= count($this->translates['wait_translate']) > 0 || count($this->translates['wait_revision']) > 0 ? '' : 'active' ?>">
+                    <a href="#container-revised" aria-controls="container-revised" role="tab" data-toggle="tab" aria-expanded="true">
+                        <span class="glyphicon glyphicon-earphone"></span><?= $this->translate('Revised') ?>
+                        <span data-qtd-revised="<?= count($this->translates['revised']) ?>">(<?= count($this->translates['revised']) ?>)</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="card-body tab-content">
+                <div role="tabpanel" class="tab-pane <?= count($this->translates['wait_translate']) > 0 ? 'active' : '' ?>" id="container-wait-translate">
+                    <div class="panel-body" id="wait-translate">                                                                       
+                        <?php foreach ($this->translates['wait_translate'] AS $translate) { ?>
+                            <form method="post" data-translate-target="#translate-target-<?= $translate->getId() ?>" data-translate-text="#translate-text-<?= $translate->getId() ?>" data-souce-lang="<?= $this->companyLanguage->getLanguage() ?>" data-target-lang="<?= $this->userLanguage->getLanguage() ?>" data-translate="gtranslate" data-translate-container-target="#wait-revision" data-translate-container-clone="#clone-revision" action="/translate/automatic-translate.json" data-wait-container="wait-container-<?= $translate->getId() ?>">
+                                <fieldset class="box-address highlight" id="container-translate-<?= $translate->getId() ?>">
+                                    <div class="row">
+                                        <div class="col-xs-4">                                            
+                                            <textarea id="translate-text-<?= $translate->getId() ?>" name="original-translate" class="form-control input-md" readonly><?= $this->defaultTranslate($translate->getTranslateKey())->getTranslate() ?></textarea>                                                                                                
+                                        </div>                                
+                                        <div class="col-xs-4">
+                                            <input type="hidden" name="id" value="<?= $translate->getId() ?>">
+                                            <textarea id="translate-target-<?= $translate->getId() ?>" name="translate" class="form-control input-md" readonly></textarea>
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <button data-wait="true" type="submit" class="btn btn-primary pull-right" id="wait-container-<?= $translate->getId() ?>">
+                                                <?= $this->translate('Translate with google') ?>
+                                            </button>                                            
+                                        </div>
+                                    </div>                    
+                                </fieldset>                
+                            </form>
+                        <?php } ?>
+                    </div>
+                </div>
+                <div role="tabpanel" class="tab-pane <?= count($this->translates['wait_translate']) > 0 ? '' : count($this->translates['wait_revision']) > 0 ? 'active' : '' ?>" id="container-wait-revision">
+                    <div class="panel-body" id="wait-revision">
+                        <form id="clone-revision" class="clone hidden" method="post" data-translate="wtranslate" data-translate-container-target="#revised" data-translate-container-clone="#clone-revised" action="/translate/revised-translate.json" data-wait-container="wait-container-{id}">
+                            <fieldset class="box-address highlight" id="container-translate-{id}">
+                                <div class="row">
+                                    <div class="col-xs-4">                                        
+                                        <textarea id="translate-text-{id}" name="original-translate" class="form-control input-md" readonly>{original}</textarea>                                        
+                                    </div>                                
+                                    <div class="col-xs-4">
+                                        <input type="hidden" name="id" value="{id}">
+                                        <textarea name="translate" class="form-control input-md" >{translate}</textarea>
+                                    </div>
+                                    <div class="col-xs-4">
+                                        <button data-wait="true" type="submit" class="btn btn-primary pull-right" id="wait-container-{id}">
+                                            <?= $this->translate('Revise') ?>
+                                        </button>                                            
+                                    </div>
+                                </div>                    
+                            </fieldset>
+                        </form>
+                        <?php foreach ($this->translates['wait_revision'] AS $translate) { ?>                                                                            
+                            <form method="post" data-translate="wtranslate" data-translate-container-target="#revised" data-translate-container-clone="#clone-revised" action="/translate/revised-translate.json" data-wait-container="wait-container-<?= $translate->getId() ?>">
+                                <fieldset class="box-address highlight" id="container-translate-<?= $translate->getId() ?>">
+                                    <div class="row">
+                                        <div class="col-xs-4">
+                                            <textarea id="translate-text-<?= $translate->getId() ?>" name="original-translate" class="form-control input-md" readonly><?= $this->defaultTranslate($translate->getTranslateKey())->getTranslate() ?></textarea>    
+                                        </div>                                
+                                        <div class="col-xs-4">
+                                            <input type="hidden" name="id" value="<?= $translate->getId() ?>">
+                                            <textarea name="translate" class="form-control input-md" ><?= $translate->getTranslate() ?></textarea>
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <button data-wait="true" type="submit" class="btn btn-primary pull-right" id="wait-container-<?= $translate->getId() ?>">
+                                                <?= $this->translate('Revise') ?>
+                                            </button>                                            
+                                        </div>
+                                    </div>                    
+                                </fieldset>                
+                            </form>              
+                        <?php } ?>
+                    </div>
+                </div>
+                <div role="tabpanel" class="tab-pane <?= count($this->translates['wait_translate']) > 0 || count($this->translates['wait_revision']) > 0 ? '' : 'active' ?>" id="container-revised">
+                    <div class="panel-body" id="revised">                        
+                        <form   id="clone-revised" class="clone hidden" method="post" data-translate="rtranslate" action="/translate/revised-translate.json" data-wait-container="wait-container-{id}">
+                            <fieldset class="box-address highlight" id="container-translate-{id}">
+                                <div class="row">
+                                    <div class="col-xs-4">
+                                        <textarea id="translate-text-{id}" name="original-translate" class="form-control input-md" readonly>{original}</textarea>                                        
+                                    </div>                                
+                                    <div class="col-xs-4">
+                                        <input type="hidden" name="id" value="{id}">
+                                        <textarea name="translate" class="form-control input-md" >{translate}</textarea>
+                                    </div>
+                                    <div class="col-xs-4">
+                                        <button data-wait="true" type="submit" class="btn btn-primary pull-right" id="wait-container-{id}">
+                                            <?= $this->translate('Change') ?>
+                                        </button>                                            
+                                    </div>
+                                </div>                    
+                            </fieldset>                
+                        </form> 
+                        <?php foreach ($this->translates['revised'] AS $translate) { ?>
+                            <form method="post" data-translate="rtranslate" action="/translate/revised-translate.json" data-wait-container="wait-container-<?= $translate->getId() ?>">
+                                <fieldset class="box-address highlight" id="container-translate-<?= $translate->getId() ?>">
+                                    <div class="row">
+                                        <div class="col-xs-4">
+                                            <textarea id="translate-text-<?= $translate->getId() ?>" name="original-translate" class="form-control input-md" readonly><?= $this->defaultTranslate($translate->getTranslateKey())->getTranslate() ?></textarea>                                                
+                                        </div>                                
+                                        <div class="col-xs-4">
+                                            <input type="hidden" name="id" value="<?= $translate->getId() ?>">
+                                            <textarea name="translate" class="form-control input-md" ><?= $translate->getTranslate() ?></textarea>
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <button data-wait="true" type="submit" class="btn btn-primary pull-right" id="wait-container-<?= $translate->getId() ?>">
+                                                <?= $this->translate('Change') ?>
+                                            </button>                                            
+                                        </div>
+                                    </div>                    
+                                </fieldset>                
+                            </form>            
+                        <?php } ?>
+                    </div>
+                </div>            
+            </div>        
+        </div>
+    </div>
+</div>

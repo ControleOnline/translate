@@ -1,0 +1,21 @@
+{
+    "name": "controleonline/translate",
+    "description": "Translate System by domain used on Controle Online",
+    "license": "BSD-3-Clause",
+    "homepage": "https://github.com/ControleOnline/translate",
+    "keywords": [
+        "ControleOnline",
+        "Translate"
+    ],
+    "autoload": {
+        "psr-4": {
+            "Translate\\": "src/Translate"
+        },
+        "classmap": [
+            "Module.php"
+        ]
+    },
+    "require": {
+        "controleonline/core": "*"
+    }
+}
